@@ -1,36 +1,29 @@
-# Elige y copia lo que necesites para tu proyecto
+# =========================================================================
+# .GITIGNORE COMPLETO PARA .NET + DOCKER
+# =========================================================================
 
-# --- ENTORNOS Y DEPENDENCIAS ---
-node_modules/
-bower_components/
-jspm_packages/
-.npm/
-vendor/
+# --- .NET (C#) COMPILADOS Y TEMPORALES ---
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
 
-# --- ARCHIVOS DE CONFIGURACIÓN Y SECRETOS (¡IMPORTANTE!) ---
+# --- ARCHIVOS DE CONFIGURACIÓN LOCAL ---
+# Mantiene appsettings.json como plantilla base, pero ignora los datos locales/secretos
+appsettings.Development.json
+appsettings.Local.json
 .env
 .env.local
 .env.*.local
-*.pem
-*.key
-config/jwt/
 
-# --- COMPILADOS Y SALIDAS ---
-dist/
-build/
-out/
-*.exe
-*.dll
-*.so
-*.dmg
-
-# --- LOGS Y TEMPORALES ---
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.eslintcache
-.cache/
+# --- DOCKER ---
+.docker/
+# Ignora carpetas de volúmenes de datos si mapeas la BD a tu máquina local
+data/
+db-data/
+postgres-data/
+mysql-data/
 
 # --- IDEs Y EDITORES DE CÓDIGO ---
 # VS Code
@@ -38,29 +31,16 @@ yarn-error.log*
 !.vscode/extensions.json
 .history/
 
-# IntelliJ / WebStorm / PhpStorm
-.idea/
-*.iwb
-*.iml
+# Visual Studio / Rider
+.vs/
+_ReSharper.Caches/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
 # --- ARCHIVOS DEL SISTEMA OPERATIVO ---
-# macOS
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Windows
 Thumbs.db
-Thumbs.db:encryptable
 ehthumbs.db
 Desktop.ini
-
-
-# --- .NET (C#) COMPILADOS ---
-bin/
-obj/
-
-# --- ARCHIVOS DE CONFIGURACIÓN LOCAL ---
-# Esto ignora las configuraciones que tienen contraseñas o datos locales
-appsettings.Development.json
-appsettings.Local.json
