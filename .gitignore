@@ -1,0 +1,56 @@
+# Elige y copia lo que necesites para tu proyecto
+
+# --- ENTORNOS Y DEPENDENCIAS ---
+node_modules/
+bower_components/
+jspm_packages/
+.npm/
+vendor/
+
+# --- ARCHIVOS DE CONFIGURACIÓN Y SECRETOS (¡IMPORTANTE!) ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+config/jwt/
+
+# --- COMPILADOS Y SALIDAS ---
+dist/
+build/
+out/
+*.exe
+*.dll
+*.so
+*.dmg
+
+# --- LOGS Y TEMPORALES ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.cache/
+
+# --- IDEs Y EDITORES DE CÓDIGO ---
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+.history/
+
+# IntelliJ / WebStorm / PhpStorm
+.idea/
+*.iwb
+*.iml
+
+# --- ARCHIVOS DEL SISTEMA OPERATIVO ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
