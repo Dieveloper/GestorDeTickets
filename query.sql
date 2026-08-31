@@ -24,3 +24,9 @@ VALUES
 ('cliente1@empresa.com', 'Hola, la factura de este mes me ha llegado duplicada. Necesito un abono.'),
 ('cliente2@empresa.com', 'El sistema no me deja hacer login, da error 500.');
 GO
+
+DELETE TicketsSoporte
+
+select * from TicketsSoporte
+
+select * from

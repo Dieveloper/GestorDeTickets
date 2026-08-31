@@ -16,7 +16,7 @@ appsettings.Local.json
 .env
 .env.local
 .env.*.local
-
+appsettings.json
 # --- DOCKER ---
 .docker/
 # Ignora carpetas de volúmenes de datos si mapeas la BD a tu máquina local
@@ -44,3 +44,4 @@ _ReSharper.Caches/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+

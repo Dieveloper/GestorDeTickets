@@ -15,7 +15,7 @@ builder.Services.AddHangfire(config => config
 builder.Services.AddHangfireServer();
 
 // 3. NUESTROS Servicios (Inyección de Dependencias)
-builder.Services.AddTransient<ITicketClassifierService, DummyClassifierService>();
+builder.Services.AddTransient<ITicketClassifierService, GeminiClassifierService>();
 builder.Services.AddTransient<ITicketProcessorService, TicketProcessorService>();
 
 var app = builder.Build();
