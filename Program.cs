@@ -1,26 +1,45 @@
 using Hangfire;
-using TicketProcessor.Models;
-using TicketProcessor.Services; 
+using TicketProcessor.API; // Añadimos la referencia a tus nuevos endpoints
+using TicketProcessor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Configuración de BD
-string bdConexion = builder.Configuration.GetConnectionString("BdConexion");
+string bdConexion = builder.Configuration.GetConnectionString("BdConexion") 
+    ?? throw new InvalidOperationException("Falta la cadena de conexión");
 
-// 2. Servicios de terceros (Hangfire)
+// 1. Servicios de terceros (Hangfire)
 builder.Services.AddHangfire(config => config
     .UseSqlServerStorage(bdConexion)
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings());
 builder.Services.AddHangfireServer();
 
-// 3. NUESTROS Servicios (Inyección de Dependencias)
+// 2. CORS para tu frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirFrontend", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
+// 3. Inyección de Dependencias
 builder.Services.AddTransient<ITicketClassifierService, GeminiClassifierService>();
 builder.Services.AddTransient<ITicketProcessorService, TicketProcessorService>();
 
 var app = builder.Build();
 
+// 4. Configuración del Pipeline HTTP
+app.UseCors("PermitirFrontend");
 app.UseHangfireDashboard();
-RecurringJob.AddOrUpdate<ITicketProcessorService>("ProcesarTickets", x => x.ProcesarTicketsPendientesAsync(), Cron.Minutely());
+
+// 5. Trabajos en segundo plano
+RecurringJob.AddOrUpdate<ITicketProcessorService>(
+    "ProcesarTickets", 
+    x => x.ProcesarTicketsPendientesAsync(), 
+    Cron.Minutely());
+
+// 6. Registro de Endpoints
+app.MapTicketEndpoints();
 
 app.Run();
