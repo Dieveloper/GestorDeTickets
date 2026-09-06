@@ -1,9 +1,6 @@
-using Microsoft.Data.SqlClient;
-using Dapper;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using TicketProcessor.Models; 
+using TicketProcessor.Repositories;
 
 namespace TicketProcessor.Services
 {
@@ -14,21 +11,20 @@ namespace TicketProcessor.Services
 
     public class TicketProcessorService : ITicketProcessorService
     {
-        private readonly string _conexion;
+        private readonly ITicketRepository _ticketRepository;
         private readonly ITicketClassifierService _clasificador;
 
-        // INYECCIÓN: Pedimos la configuración Y nuestro oráculo
-        public TicketProcessorService(IConfiguration config, ITicketClassifierService clasificador)
+        public TicketProcessorService(
+            ITicketRepository ticketRepository,
+            ITicketClassifierService clasificador)
         {
-            _conexion = config.GetConnectionString("BdConexion");
+            _ticketRepository = ticketRepository;
             _clasificador = clasificador;
         }
 
         public async Task ProcesarTicketsPendientesAsync()
         {
-            using var db = new SqlConnection(_conexion);
-            var consultaSql = "SELECT * FROM TicketsSoporte WHERE Estado = 'Pendiente';";
-            var ticketsPendientes = await db.QueryAsync<Ticket>(consultaSql); 
+            var ticketsPendientes = await _ticketRepository.ObtenerPendientesAsync();
             
             foreach (var ticket in ticketsPendientes)
             {
@@ -36,11 +32,7 @@ namespace TicketProcessor.Services
 
                 
                 string textoDetectado = await _clasificador.ClasificarTicketAsync(ticket.TextoTicket);
-                var sqlUpdate = "UPDATE TicketsSoporte SET ESTADO = 'PROCESADO', CategoriaIA = @CategoriaIA, FechaProcesamiento = GETDATE() WHERE ID = @ID";
-                await db.ExecuteAsync(sqlUpdate, new { 
-                CategoriaIA = textoDetectado, 
-                ID = ticket.Id 
-                });
+                await _ticketRepository.MarcarComoProcesadoAsync(ticket.Id, textoDetectado);
                 
             }
         }

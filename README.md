@@ -6,7 +6,7 @@ Un servicio backend robusto construido para la clasificación y el procesamiento
 
 ## 🛠️ Stack Tecnológico
 
-* **Framework:** .NET 8 (Web API)
+* **Framework:** .NET 10 (Web API)
 * **Orquestación de Tareas:** Hangfire (Background Jobs)
 * **Acceso a Datos:** Dapper (Micro-ORM para máximo rendimiento)
 * **Base de Datos:** SQL Server 2022
