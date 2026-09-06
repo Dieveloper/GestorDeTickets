@@ -1,43 +1,36 @@
-# 🚀 Motor Automático de Procesamiento de Tickets
+# TicketProcessor
 
-Un servicio backend robusto construido para la clasificación y el procesamiento de tickets de soporte técnico en segundo plano. Diseñado con una arquitectura limpia, tolerante a fallos y optimizado para ejecutar operaciones de alto rendimiento en base de datos.
+API backend para registrar, clasificar y procesar tickets de soporte en segundo plano.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-* **Framework:** .NET 8 (Web API)
-* **Orquestación de Tareas:** Hangfire (Background Jobs)
-* **Acceso a Datos:** Dapper (Micro-ORM para máximo rendimiento)
-* **Base de Datos:** SQL Server 2022
+* **Framework:** .NET 10
+* **API:** ASP.NET Core Minimal API
+* **Clasificación con IA:** Gemini
+* **Procesamiento en segundo plano:** Hangfire
+* **Acceso a Datos:** Dapper
+* **Base de datos:** SQL Server
 
 ---
 
 ## ⚙️ Requisitos y Configuración Inicial
 
-Para levantar este proyecto en tu entorno local, necesitarás tener instalado el SDK de .NET 8 y una instancia de SQL Server (se recomienda Docker). Sigue estos pasos para arrancar el motor:
+Para ejecutar el proyecto localmente necesitas el SDK de .NET 10, una instancia de SQL Server y una clave de API de Gemini.
 
-1. **Preparar la Base de Datos:**
+1. **Preparar la base de datos:**
    * Conéctate a tu servidor local de SQL Server.
-   * Ejecuta el script `query.sql` incluido en la raíz del repositorio. Esto creará automáticamente la base de datos `SistemaPedidosCorp`, las tablas necesarias y algunos datos de prueba.
+   * Ejecuta el script `query.sql` incluido en la raíz del repositorio. Creará la base de datos `TicketProcessorDb` y la tabla `TicketsSoporte`.
 
-2. **Configurar las Credenciales (Importante):**
-   * Por seguridad, la cadena de conexión real no está subida al repositorio.
-   * Abre o crea el archivo `appsettings.json` y define tu propia conexión bajo la clave `BdConexion`. 
+2. **Configurar la aplicación:**
+   * Define la cadena de conexión bajo `ConnectionStrings:BdConexion`.
+   * Define la clave de Gemini bajo `GeminiApiKey`.
    > **Nota:** Si usas contenedores locales (especialmente en macOS), asegúrate de incluir `TrustServerCertificate=True`.
 
 3. **Arrancar la API:**
    * Abre tu terminal en la carpeta del proyecto y ejecuta el comando `dotnet run`.
 
-4. **Acceder al Panel de Control:**
+4. **Acceder al panel de Hangfire:**
    * Navega a la URL que devuelve la consola añadiendo la ruta `/hangfire` (ejemplo: `http://localhost:5xxx/hangfire`). 
-   * Desde este panel podrás monitorizar el procesamiento automático que se ejecuta cada minuto.
-
----
-
-## 🗺️ Roadmap (Próximos Pasos)
-
-* [x] Arquitectura base e inyección de dependencias.
-* [x] Implementación de Hangfire para tareas recurrentes.
-* [x] Clasificador de tickets simulado (Dummy Service) usando Dapper.
-* [ ] **Integración de IA:** Sustituir el servicio simulado por una conexión real a la API de OpenAI para entender el contexto semántico de cada ticket.
+   * El proyecto registra un trabajo recurrente para procesar los tickets pendientes.

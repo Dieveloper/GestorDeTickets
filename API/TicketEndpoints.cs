@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Dapper;
-using TicketProcessor.Models;
+using TicketProcessor.Repositories;
 using TicketProcessor.Services;
 
 namespace TicketProcessor.API
@@ -14,15 +11,13 @@ namespace TicketProcessor.API
         public static void MapTicketEndpoints(this IEndpointRouteBuilder app)
         {
             // 1. Obtener todos los tickets
-            app.MapGet("/api/tickets", async (IConfiguration config) =>
+            app.MapGet("/api/tickets", async (ITicketRepository ticketRepository, CancellationToken cancellationToken) =>
             {
-                using var db = new SqlConnection(config.GetConnectionString("BdConexion"));
-                var sql = "SELECT Id, ClienteEmail, TextoTicket, CategoriaIA, Estado FROM TicketsSoporte ORDER BY Id DESC";
-                var tickets = await db.QueryAsync<Ticket>(sql);
+                var tickets = await ticketRepository.ObtenerTodosAsync(cancellationToken);
                 return Results.Ok(tickets);
             });
 
-            // 2. Clasificar un ticket nuevo al vuelo con IA
+            // 2. Clasificar un ticket nuevo mediante IA
             app.MapPost("/api/tickets/clasificar", async (TicketRequest request, ITicketClassifierService aiService) =>
             {
                 if (string.IsNullOrWhiteSpace(request.TextoTicket))
@@ -33,14 +28,9 @@ namespace TicketProcessor.API
             });
 
 
-            app.MapPost("/api/tickets", async (TicketCreacion req, IConfiguration config) =>
+            app.MapPost("/api/tickets", async (TicketCreacion req, ITicketRepository ticketRepository, CancellationToken cancellationToken) =>
             {
-                using var db = new SqlConnection(config.GetConnectionString("BdConexion"));
-                var sql = @"
-                    INSERT INTO TicketsSoporte (ClienteEmail, TextoTicket, Estado, FechaCreacion) 
-                    VALUES (@ClienteEmail, @TextoTicket, 'Pendiente', GETDATE())";
-                
-                await db.ExecuteAsync(sql, req);
+                await ticketRepository.CrearAsync(req.ClienteEmail, req.TextoTicket, cancellationToken);
                 return Results.Ok(new { mensaje = "Ticket encolado para Hangfire" });
             });
         }
@@ -55,5 +45,3 @@ namespace TicketProcessor.API
     
 
 }
-
-

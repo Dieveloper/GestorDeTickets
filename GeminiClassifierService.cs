@@ -8,7 +8,7 @@ namespace TicketProcessor.Services
     public class GeminiClassifierService : ITicketClassifierService
     {
         private readonly string _apiKey;
-        private const string ModelName = "gemini-3.6-flash"; 
+        private const string ModelName = "gemini-3.5-flash"; 
 
         public GeminiClassifierService(IConfiguration config)
         {

@@ -1,12 +1,11 @@
--- 1. Creamos la base de datos
-CREATE DATABASE SistemaPedidosCorp;
+-- Base de datos de TicketProcessor
+CREATE DATABASE TicketProcessorDb;
 GO
 
--- 2. Nos movemos a esa base de datos
-USE SistemaPedidosCorp;
+USE TicketProcessorDb;
 GO
 
--- 3. Creamos nuestra tabla de negocio
+-- Tickets pendientes de clasificación o ya procesados.
 CREATE TABLE TicketsSoporte (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     ClienteEmail NVARCHAR(100) NOT NULL,
@@ -17,16 +16,3 @@ CREATE TABLE TicketsSoporte (
     FechaProcesamiento DATETIME NULL
 );
 GO
-
--- 4. Metemos un par de datos de prueba
-INSERT INTO TicketsSoporte (ClienteEmail, TextoTicket)
-VALUES 
-('cliente1@empresa.com', 'Hola, la factura de este mes me ha llegado duplicada. Necesito un abono.'),
-('cliente2@empresa.com', 'El sistema no me deja hacer login, da error 500.');
-GO
-
-DELETE TicketsSoporte
-
-select * from TicketsSoporte
-
-select * from

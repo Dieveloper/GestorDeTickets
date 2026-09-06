@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mentoría .NET · TicketProcessor</title>
+    <style>
+      :root {
+        --fondo: #f6f8fb;
+        --superficie: #ffffff;
+        --texto: #172033;
+        --muted: #5b677d;
+        --borde: #dbe2ee;
+        --primario: #185adb;
+        --peligro: #a92f3d;
+        --aviso: #8b5a00;
+        --exito: #1d6c45;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--fondo);
+        color: var(--texto);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.55;
+      }
+
+      main { max-width: 1120px; margin: 0 auto; padding: 3rem 1.25rem 5rem; }
+
+      header {
+        border-left: 4px solid var(--primario);
+        padding-left: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: .35rem; }
+      h2 { margin: 3rem 0 1rem; font-size: 1.45rem; }
+      h3 { font-size: 1rem; margin-bottom: .5rem; }
+      .muted { color: var(--muted); }
+
+      .notice {
+        border: 1px solid #e7c369;
+        border-left: 4px solid var(--aviso);
+        border-radius: .5rem;
+        background: #fff9e8;
+        padding: 1rem;
+      }
+
+      .grid { display: grid; gap: 1rem; }
+      .three-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+      .card, details {
+        background: var(--superficie);
+        border: 1px solid var(--borde);
+        border-radius: .6rem;
+      }
+
+      .card { padding: 1.1rem; }
+      .card p:last-child { margin-bottom: 0; }
+
+      .metric {
+        padding: 1rem;
+        border-left: 3px solid var(--borde);
+      }
+      .metric strong { display: block; font-size: 1.65rem; }
+      .metric.warning { border-left-color: var(--aviso); }
+      .metric.success { border-left-color: var(--exito); }
+
+      details { margin-bottom: .75rem; overflow: hidden; }
+      summary {
+        cursor: pointer;
+        padding: 1rem 1.1rem;
+        font-weight: 700;
+      }
+      details > div { border-top: 1px solid var(--borde); padding: 1rem 1.1rem; }
+
+      table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+      th, td { text-align: left; padding: .7rem; vertical-align: top; border-bottom: 1px solid var(--borde); }
+      th { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+      tr:last-child td { border-bottom: 0; }
+      code { background: #edf2fa; border-radius: .25rem; padding: .1rem .3rem; color: #203f74; }
+
+      .priority { font-weight: 700; white-space: nowrap; }
+      .p0 { color: var(--peligro); }
+      .p1 { color: var(--aviso); }
+      .p2 { color: var(--primario); }
+
+      footer { margin-top: 3rem; color: var(--muted); font-size: .9rem; }
+
+      @media (max-width: 720px) {
+        main { padding-top: 1.75rem; }
+        .three-columns, .two-columns { grid-template-columns: 1fr; }
+        th, td { padding: .55rem .35rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Mentoría .NET · TicketProcessor</h1>
+        <p class="muted">Revisión del código: arquitectura, tecnologías, recorrido y mejoras para un desarrollador junior.</p>
+      </header>
+
+      <section class="notice" aria-labelledby="conclusion">
+        <h2 id="conclusion">Conclusión</h2>
+        <p>La base es buena para aprender: usa ASP.NET Core, inyección de dependencias, Dapper, Hangfire y Gemini. Antes de producción hay que proteger el dashboard, restringir CORS y hacer atómico el procesamiento de tickets.</p>
+      </section>
+
+      <section aria-labelledby="estado">
+        <h2 id="estado">Verificación realizada</h2>
+        <div class="grid three-columns">
+          <div class="metric success"><strong>0</strong>errores de compilación</div>
+          <div class="metric warning"><strong>2</strong>advertencias de nulabilidad</div>
+          <div class="metric warning"><strong>0</strong>proyectos de prueba detectados</div>
+        </div>
+      </section>
+
+      <section aria-labelledby="flujo">
+        <h2 id="flujo">Qué resuelve el sistema</h2>
+        <div class="grid three-columns">
+          <article class="card">
+            <h3>1. Entrada HTTP</h3>
+            <p>Un cliente envía <code>POST /api/tickets</code>. Dapper guarda el ticket en SQL Server con estado <code>Pendiente</code>.</p>
+          </article>
+          <article class="card">
+            <h3>2. Trabajo recurrente</h3>
+            <p>Hangfire ejecuta el procesador cada minuto. El servicio consulta tickets pendientes y llama al clasificador.</p>
+          </article>
+          <article class="card">
+            <h3>3. Resultado</h3>
+            <p>Gemini devuelve <code>OFICINA</code> o <code>SOPORTE</code>; la categoría y el estado se actualizan en la base de datos.</p>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="tecnologias">
+        <h2 id="tecnologias">Tecnologías y para qué sirven</h2>
+        <table>
+          <thead><tr><th>Tecnología</th><th>Uso en el proyecto</th><th>Problema que evita o resuelve</th></tr></thead>
+          <tbody>
+            <tr><td>.NET 10 / ASP.NET Core</td><td>Host web y Minimal API.</td><td>Expone endpoints HTTP con poco código repetitivo.</td></tr>
+            <tr><td>Inyección de dependencias</td><td>Relaciona <code>ITicketClassifierService</code> con Gemini.</td><td>Desacopla el procesamiento del proveedor de IA y facilita pruebas.</td></tr>
+            <tr><td>Dapper + SqlClient</td><td>Ejecuta SQL parametrizado y mapea filas a <code>Ticket</code>.</td><td>Acceso rápido y explícito a SQL Server sin concatenar valores inseguros.</td></tr>
+            <tr><td>Hangfire</td><td>Agenda y ejecuta <code>ProcesarTicketsPendientesAsync</code>.</td><td>Evita que el usuario espere la clasificación durante el POST.</td></tr>
+            <tr><td>Google GenAI</td><td>Clasifica semánticamente el texto del ticket.</td><td>Entiende casos que una lista fija de palabras no puede cubrir.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section aria-labelledby="codigo">
+        <h2 id="codigo">Lectura del código por archivo</h2>
+        <p class="muted">Usamos <code>&lt;details&gt;</code> y <code>&lt;summary&gt;</code>: son elementos HTML accesibles que se despliegan sin JavaScript.</p>
+
+        <details open>
+          <summary>Program.cs · arranque, DI, CORS y Hangfire</summary>
+          <div>
+            <table>
+              <thead><tr><th>Línea(s)</th><th>Explicación</th></tr></thead>
+              <tbody>
+                <tr><td>5</td><td><code>WebApplication.CreateBuilder(args)</code> prepara el servidor, configuración y contenedor de dependencias.</td></tr>
+                <tr><td>7–8</td><td>Lee <code>BdConexion</code> y falla al arrancar si falta; es una buena práctica de <em>fail fast</em>.</td></tr>
+                <tr><td>11–15</td><td>Configura Hangfire para guardar sus trabajos y reintentos en SQL Server y activa sus workers.</td></tr>
+                <tr><td>18–24</td><td>Registra CORS. <code>AllowAnyOrigin</code> sirve para desarrollo, pero debe reemplazarse por orígenes concretos en producción.</td></tr>
+                <tr><td>27–28</td><td>DI crea los servicios cuando se solicitan mediante sus interfaces. Así el procesador no depende directamente de Gemini.</td></tr>
+                <tr><td>33–34</td><td>Activa CORS y el dashboard <code>/hangfire</code>. Este dashboard requiere autenticación antes de publicar la API.</td></tr>
+                <tr><td>37–40</td><td>Define un trabajo identificado como <code>ProcesarTickets</code> que se lanza cada minuto.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details>
+          <summary>Ticket.cs · modelo de datos</summary>
+          <div>
+            <table>
+              <thead><tr><th>Línea(s)</th><th>Explicación</th></tr></thead>
+              <tbody>
+                <tr><td>5</td><td>Clase mutable que Dapper rellena leyendo columnas de SQL Server.</td></tr>
+                <tr><td>7</td><td><code>Id</code> corresponde a la clave primaria <code>IDENTITY</code> de la tabla.</td></tr>
+                <tr><td>8–11</td><td><code>required</code> ayuda al compilador a exigir valores al crear el objeto en C#, pero no valida el JSON ni la base de datos.</td></tr>
+                <tr><td>10</td><td><code>CategoriaIA</code> es anulable porque un ticket pendiente todavía no tiene categoría.</td></tr>
+                <tr><td>12–13</td><td>La clase tiene <code>FechaRespuesta</code>, pero SQL usa <code>FechaProcesamiento</code>: deben llamarse igual para que el mapeo sea claro.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details>
+          <summary>TicketProcessorService.cs · lote de procesamiento</summary>
+          <div>
+            <table>
+              <thead><tr><th>Línea(s)</th><th>Explicación</th></tr></thead>
+              <tbody>
+                <tr><td>10–13</td><td>La interfaz describe una capacidad: procesar tickets. Hangfire la puede pedir a DI sin saber la implementación.</td></tr>
+                <tr><td>21–25</td><td>El constructor recibe configuración y clasificador. <code>GetConnectionString</code> puede devolver null: de ahí las advertencias del build.</td></tr>
+                <tr><td>29</td><td><code>using var</code> libera la conexión al terminar, incluso si falla una operación.</td></tr>
+                <tr><td>30–31</td><td>Dapper consulta pendientes y mapea cada fila a <code>Ticket</code>. Es preferible seleccionar columnas concretas en lugar de <code>SELECT *</code>.</td></tr>
+                <tr><td>33–38</td><td>Procesa uno por uno y espera la IA. Esto controla la carga, aunque hace lento el lote si hay muchos tickets.</td></tr>
+                <tr><td>39–43</td><td>El UPDATE usa parámetros (<code>@CategoriaIA</code>, <code>@ID</code>); eso protege de inyección SQL.</td></tr>
+                <tr><td>Riesgo</td><td>Dos workers pueden leer el mismo ticket pendiente antes de actualizarlo. Primero hay que reclamarlo atómicamente como <code>Procesando</code>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details>
+          <summary>TicketClassifierService.cs y GeminiClassifierService.cs · contrato e IA</summary>
+          <div>
+            <table>
+              <thead><tr><th>Línea(s)</th><th>Explicación</th></tr></thead>
+              <tbody>
+                <tr><td>Interfaz</td><td><code>ITicketClassifierService</code> permite usar Gemini, el clasificador Dummy o un fake para tests manteniendo el procesador igual.</td></tr>
+                <tr><td>Dummy 16–30</td><td>Divide por espacios y busca palabras de oficina. Es determinista, pero <code>factura,</code> no coincide por la puntuación.</td></tr>
+                <tr><td>Gemini 15</td><td>La API key se lee de configuración. Debe venir de secretos de usuario, variables de entorno o un gestor de secretos, nunca de Git.</td></tr>
+                <tr><td>Gemini 24–37</td><td>El prompt define dos categorías y ejemplos. El texto del usuario es entrada no confiable: hay que limitar su tamaño y evitar instrucciones inyectadas.</td></tr>
+                <tr><td>Gemini 46–54</td><td>Normaliza la respuesta y aplica lista blanca. Validar solo OFICINA/SOPORTE es una buena frontera; usar SOPORTE como fallback puede falsear métricas.</td></tr>
+                <tr><td>Gemini 56–59</td><td>Captura cualquier excepción. Mejor registrar con <code>ILogger</code>, distinguir fallos transitorios y marcar el ticket para reintento.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details>
+          <summary>API/TicketEndpoints.cs, SQL y documentación</summary>
+          <div>
+            <table>
+              <thead><tr><th>Zona</th><th>Explicación y mejora</th></tr></thead>
+              <tbody>
+                <tr><td>GET /api/tickets</td><td>Devuelve tickets con Dapper. Extraer esta consulta a un repositorio evita que los endpoints conozcan SQL y conexiones.</td></tr>
+                <tr><td>POST /api/tickets/clasificar</td><td>Valida solo texto vacío. Debe tener límite de tamaño, autenticación y rate limiting porque consume IA.</td></tr>
+                <tr><td>POST /api/tickets</td><td>Inserta parametrizado, pero responde 200. Es más correcto devolver 201 Created con el Id generado.</td></tr>
+                <tr><td>query.sql</td><td>El <code>DELETE TicketsSoporte</code> borra todos los datos y el último <code>SELECT</code> está incompleto. Eliminar ambos de la inicialización.</td></tr>
+                <tr><td>Esquema SQL</td><td>Usar <code>NOT NULL</code>, un CHECK para los estados, <code>DATETIME2</code> en UTC y un índice por <code>Estado</code>.</td></tr>
+                <tr><td>README y .http</td><td>README indica .NET 8/OpenAI, pero el proyecto usa .NET 10/Gemini. El archivo HTTP prueba una ruta weatherforecast inexistente.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section aria-labelledby="mejoras">
+        <h2 id="mejoras">Mejoras priorizadas</h2>
+        <table>
+          <thead><tr><th>Prioridad</th><th>Acción</th></tr></thead>
+          <tbody>
+            <tr><td class="priority p0">P0 · Seguridad</td><td>Restringir CORS y proteger <code>/hangfire</code> mediante autenticación y autorización.</td></tr>
+            <tr><td class="priority p0">P0 · Correctitud</td><td>Reclamar filas atómicamente con la transición Pendiente → Procesando para impedir doble clasificación.</td></tr>
+            <tr><td class="priority p0">P0 · Datos</td><td>Eliminar SQL destructivo, usar migraciones repetibles y restringir estados desde la base de datos.</td></tr>
+            <tr><td class="priority p1">P1 · Errores</td><td>No clasificar como SOPORTE al fallar Gemini: registrar, reintentar y guardar un estado de error.</td></tr>
+            <tr><td class="priority p1">P1 · API</td><td>Validar DTOs, retornar 201 al crear, usar ProblemDetails y CancellationToken.</td></tr>
+            <tr><td class="priority p2">P2 · Calidad</td><td>Añadir tests unitarios con fake de IA, pruebas de integración SQL y actualizar README y el archivo HTTP.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section aria-labelledby="como-se-hizo">
+        <h2 id="como-se-hizo">Cómo está construida esta página</h2>
+        <div class="grid two-columns">
+          <article class="card">
+            <h3>HTML: estructura y significado</h3>
+            <p>Usa <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;table&gt;</code> y <code>&lt;details&gt;</code>. Esto hace el contenido entendible para personas, lectores de pantalla y buscadores.</p>
+          </article>
+          <article class="card">
+            <h3>CSS: apariencia adaptable</h3>
+            <p>Las variables de <code>:root</code> centralizan colores. <code>grid</code> distribuye tarjetas y la regla <code>@media</code> convierte columnas en una sola columna en móvil.</p>
+          </article>
+        </div>
+      </section>
+
+      <footer>Archivo estático: no depende de npm, .NET ni servidor. Ábrelo directamente con un navegador.</footer>
+    </main>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 using Hangfire;
-using TicketProcessor.API; // Añadimos la referencia a tus nuevos endpoints
+using TicketProcessor.API;
+using TicketProcessor.Repositories;
 using TicketProcessor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,7 @@ builder.Services.AddHangfire(config => config
     .UseRecommendedSerializerSettings());
 builder.Services.AddHangfireServer();
 
-// 2. CORS para tu frontend
+// 2. CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend", policy =>
@@ -25,6 +26,7 @@ builder.Services.AddCors(options =>
 
 // 3. Inyección de Dependencias
 builder.Services.AddTransient<ITicketClassifierService, GeminiClassifierService>();
+builder.Services.AddTransient<ITicketRepository, DapperTicketRepository>();
 builder.Services.AddTransient<ITicketProcessorService, TicketProcessorService>();
 
 var app = builder.Build();
