@@ -1,25 +1,37 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Google.GenAI;
+using Google.GenAI.Types;
 
 namespace TicketProcessor.Services
 {
     public class GeminiClassifierService : ITicketClassifierService
     {
         private readonly string _apiKey;
+        private readonly ILogger<GeminiClassifierService> _logger;
+        private readonly ClientOptions? _clientOptions;
         private const string ModelName = "gemini-3.5-flash"; 
 
-        public GeminiClassifierService(IConfiguration config)
+        public GeminiClassifierService(IConfiguration config, ILogger<GeminiClassifierService> logger)
+            : this(config, logger, null)
+        {
+        }
+
+        internal GeminiClassifierService(
+            IConfiguration config,
+            ILogger<GeminiClassifierService> logger,
+            ClientOptions? clientOptions)
         {
             _apiKey = config["GeminiApiKey"]?.Trim() ?? throw new ArgumentNullException("Falta la API Key");
+            _logger = logger;
+            _clientOptions = clientOptions;
         }
 
         public async Task<string> ClasificarTicketAsync(string textoTicket)
         {
-            if (string.IsNullOrWhiteSpace(textoTicket)) return "SOPORTE";
-
-            var client = new Client(apiKey: _apiKey);
+            ArgumentException.ThrowIfNullOrWhiteSpace(textoTicket);
 
             var prompt = $@"Eres una API de clasificación estricta. Tu única función es devolver una sola palabra en mayúsculas, sin espacios, sin puntos y sin texto adicional.
 
@@ -38,25 +50,31 @@ namespace TicketProcessor.Services
 
             try 
             {
+                await using var client = new Client(apiKey: _apiKey, clientOptions: _clientOptions);
                 var response = await client.Models.GenerateContentAsync(
                     model: ModelName, 
                     contents: prompt
                 );
 
-                var resultadoIa = response.Text?.Replace(".", "").Replace("\"", "").Trim().ToUpper();
+                var resultadoIa = response.Text?.Replace(".", "").Replace("\"", "").Trim().ToUpperInvariant();
 
                 if (resultadoIa == "OFICINA" || resultadoIa == "SOPORTE")
                 {
-                    Console.WriteLine($"[DEBUG] Clasificado correctamente como: {resultadoIa}");
+                    _logger.LogInformation(
+                        "Ticket clasificado por Gemini con el modelo {Model}: {Category}.",
+                        ModelName, resultadoIa);
                     return resultadoIa;
                 }
 
-                return "SOPORTE"; 
+                throw new InvalidOperationException("Gemini no devolvió una categoría de clasificación válida.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error de IA: {ex.Message}");
-                return "SOPORTE";
+                // Los mensajes y cuerpos de error del proveedor pueden contener datos sensibles.
+                _logger.LogError(
+                    "Error al clasificar el ticket con Gemini. Modelo: {Model}. Tipo: {ExceptionType}.",
+                    ModelName, ex.GetType().Name);
+                throw;
             }
         }
     }
