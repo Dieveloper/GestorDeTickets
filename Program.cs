@@ -41,6 +41,11 @@ RecurringJob.AddOrUpdate<ITicketProcessorService>(
     x => x.ProcesarTicketsPendientesAsync(), 
     Cron.Minutely());
 
+RecurringJob.AddOrUpdate<ITicketProcessorService>(
+    "ReprocesarTicketsFallidos",
+    x => x.ProcesarTicketsFallidosAsync(),
+    "*/5 * * * *");
+
 // 6. Registro de Endpoints
 app.MapTicketEndpoints();
 

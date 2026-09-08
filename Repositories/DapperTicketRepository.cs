@@ -35,6 +35,17 @@ public class DapperTicketRepository : ITicketRepository
         return await db.QueryAsync<Ticket>(new CommandDefinition(sql, cancellationToken: cancellationToken));
     }
 
+    public async Task<IEnumerable<Ticket>> ObtenerFallidosAsync(CancellationToken cancellationToken = default)
+    {
+        const string sql = "SELECT * FROM TicketsSoporte WHERE Estado = 'FALLIDO';";
+
+        await using var db = new SqlConnection(_conexion);
+        await db.OpenAsync(cancellationToken);
+
+        return await db.QueryAsync<Ticket>(new CommandDefinition(sql, cancellationToken: cancellationToken));
+
+    }
+
     public async Task CrearAsync(
         string clienteEmail,
         string textoTicket,
@@ -69,4 +80,42 @@ public class DapperTicketRepository : ITicketRepository
             new { CategoriaIA = categoriaIA, ID = ticketId },
             cancellationToken: cancellationToken));
     }
+
+    public async Task MarcarComoFallidoAsync(
+        int ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+            UPDATE TicketsSoporte
+            SET Estado = 'FALLIDO', CategoriaIA = NULL, FechaProcesamiento = NULL
+            WHERE Id = @ID AND Estado IN ('Pendiente', 'FALLIDO')
+            """;
+        await using var db = new SqlConnection(_conexion);
+        await db.OpenAsync(cancellationToken);
+
+        await db.ExecuteAsync(new CommandDefinition(
+            sql,
+            new {ID = ticketId },
+            cancellationToken: cancellationToken));
+    }
+
+    public async Task MarcarComoPendienteRevisionAsync(
+        int ticketId,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+            UPDATE TicketsSoporte
+            SET Estado = 'PENDIENTE_REVISAR', CategoriaIA = NULL, FechaProcesamiento = NULL
+            WHERE Id = @ID AND Estado = 'FALLIDO'
+            """;
+
+        await using var db = new SqlConnection(_conexion);
+        await db.OpenAsync(cancellationToken);
+
+        await db.ExecuteAsync(new CommandDefinition(
+            sql,
+            new { ID = ticketId },
+            cancellationToken: cancellationToken));
+    }
+
 }
