@@ -8,6 +8,8 @@ public interface ITicketRepository
 
     Task<IEnumerable<Ticket>> ObtenerPendientesAsync(CancellationToken cancellationToken = default);
 
+    Task<IEnumerable<Ticket>> ObtenerFallidosAsync(CancellationToken cancellationToken = default);
+
     Task CrearAsync(
         string clienteEmail,
         string textoTicket,
@@ -16,5 +18,13 @@ public interface ITicketRepository
     Task MarcarComoProcesadoAsync(
         int ticketId,
         string categoriaIA,
+        CancellationToken cancellationToken = default);
+
+    Task MarcarComoFallidoAsync(
+        int ticketId,
+        CancellationToken cancellationToken = default);
+
+    Task MarcarComoPendienteRevisionAsync(
+        int ticketId,
         CancellationToken cancellationToken = default);
 }
