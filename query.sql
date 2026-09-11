@@ -16,3 +16,5 @@ CREATE TABLE TicketsSoporte (
     FechaProcesamiento DATETIME NULL
 );
 GO
+
+SELECT * FROM TicketsSoporte

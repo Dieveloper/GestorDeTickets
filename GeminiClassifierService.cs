@@ -12,7 +12,7 @@ namespace TicketProcessor.Services
         private readonly string _apiKey;
         private readonly ILogger<GeminiClassifierService> _logger;
         private readonly ClientOptions? _clientOptions;
-        private const string ModelName = "gemini-3.5-flash"; 
+        private const string ModelName = "gemini-3.6-flash"; 
 
         public GeminiClassifierService(IConfiguration config, ILogger<GeminiClassifierService> logger)
             : this(config, logger, null)
